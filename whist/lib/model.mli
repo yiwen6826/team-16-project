@@ -7,20 +7,25 @@ type card = {suit : suit; rank : rank}
 AF : any [None] represents a lack of a card, whereas a [Some card] is an existing card of some valid suit and rank *)
 type hand = (card option) array
 
+type player = {
+  hand : hand;
+  user_id : string; (** should this signify real user vs. bot? or do we need another *)
+}
+
 (** Type table (field in the state record) also uses type hand, 
 but its RI is the number of cards is >=0 and <= 4 
 AF: same as the AF for type hand, but indices 0,1,2,3 correlate to the card played by players 1,2,3,4, respectively, 
 such that a [None] indicates the player has not yet taken their turn, and a [Some card] means 
 the player has places this card on the table, and {i it no longer exists in their hand} *)
-type table = hand
+type table = card array
 
 type state = {
-  player1 : hand;
-  player2 : hand;
-  player3 : hand;
-  player4 : hand;
+  player1 : player;
+  player2 : player;
+  player3 : player;
+  player4 : player;
   table : table
 }
 
-val init : unit -> state
+val init : int -> state
 val full_deck : card array
