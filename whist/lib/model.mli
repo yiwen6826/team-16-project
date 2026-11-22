@@ -27,5 +27,5 @@ type state = {
   table : table
 }
 
-val init : unit -> state
+val init : int -> state
 val full_deck : card array

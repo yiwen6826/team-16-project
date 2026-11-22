@@ -1,4 +1,3 @@
-Random.self_init ();
 
 (** Invariant - Number can only hold int values of 2-10 *)
 type rank = Number of int | Jack | Queen | King | Ace
@@ -51,7 +50,8 @@ let to_option arr = Array.map (fun card -> if card.rank = Number 0 then None els
 
 (** Random is initialized at the top of this file, 
 but we may be allowing to be seeded in gameplay *)
-let init () = let deck = Array.copy full_deck in
+let init seed = let deck = Array.copy full_deck in
+  Random.init seed;
   Array.shuffle ~rand:Random.int deck;
   { 
     player1 = {hand = to_option (Array.sub deck 0 12); user_id = "player_1"}; 
