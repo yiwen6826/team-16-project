@@ -24,7 +24,10 @@ type state = {
   player2 : player;
   player3 : player;
   player4 : player;
-  table : table
+  table : table;
+  round_leader : string;
+  team1_score : int;
+  team2_score : int;
 }
 
 val init : int -> state

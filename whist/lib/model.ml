@@ -25,7 +25,11 @@ type state = {
   player2 : player;
   player3 : player;
   player4 : player;
-  table : table
+  table : table;
+  round_leader : string;
+  team1_score : int;
+  team2_score : int;
+
 }
 
 let full_deck = Array.init 52 (fun i -> let suit = begin 
@@ -58,5 +62,8 @@ let init seed = let deck = Array.copy full_deck in
     player2 = {hand = to_option (Array.sub deck 13 25); user_id = "player_2"};
     player3 =  {hand = to_option (Array.sub deck 26 38); user_id = "player_3"};
     player4 = {hand = to_option (Array.sub deck 39 51); user_id = "player_4"};
-    table = [||]
+    table = [||];
+    round_leader = "player1";
+    team1_score = 0;
+    team2_score = 0;
   }
