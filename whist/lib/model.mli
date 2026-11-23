@@ -17,6 +17,7 @@ type player_information = {
   pi_team : int;
   pi_round_number : int;
   pi_current_player : int;
+  pi_my_uid : int;
 }
 
 (** Type table (field in the state record) also uses type hand, but its RI is
