@@ -17,11 +17,9 @@ let rec round_loop player_num model =
   else
     let curr_player = Model.get_current_player model in
     let chosen_card =
-      if Model.get_user_id curr_player <> human_player_id then
+      if Model.get_user_id curr_player <> 0 then
         Bot.next_move (Model.get_player_view model curr_player)
-      else (
-        show_game_state model;
-        choose_valid_card model curr_player)
+      else choose_valid_card model curr_player
     in
     let model = Model.make_move model curr_player chosen_card in
     View.print_game_state model curr_player;

@@ -45,13 +45,3 @@ val make_move : state -> player -> Card.card -> state
 val get_player_view : state -> player -> player_information
 val get_current_player : state -> player
 val get_user_id : player -> int
-
-val get_player_by_id : state -> int -> player
-(** [get_player_by_id state id] returns the player with [id], from 0 to 3. *)
-
-val get_table_cards : table -> Card.card option list
-(** [get_table_cards table] returns the played cards in player ID order.
-    A [None] entry means that player still has to play. *)
-
-val get_scores : state -> int * int
-(** [get_scores state] returns the trick counts for team 0 and team 1. *)

@@ -165,12 +165,8 @@ let get_player_view state player =
 
   
 
-let get_player_by_id state id = state.players.(id)
-
 let get_current_player state =
-  get_player_by_id state state.round_state.current_player
+  let curr_player_id = state.round_state.current_player in
+  state.players.(curr_player_id)
 
 let get_user_id player = player.user_id
-
-let get_table_cards table = Array.to_list table
-let get_scores state = state.scores
