@@ -26,3 +26,4 @@ val new_round : state -> state
 val valid_move : state -> player -> Card.card -> bool
 val make_move : state -> player -> Card.card -> state
 val get_player_view : state -> player -> player_information
+val get_current_player : state -> player
