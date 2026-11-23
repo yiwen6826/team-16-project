@@ -1,69 +1,155 @@
-
-(** Invariant - Number can only hold int values of 2-10 *)
-type rank = Number of int | Jack | Queen | King | Ace
-type suit = Hearts | Spades | Diamonds | Clubs
-type card = {suit : suit; rank : rank}
-
-(** Rep. Invariant - in whist, the number of cards in a hand in always >=0 and <= 13
-AF : any [None] represents a lack of a card, whereas a [Some card] is an existing card of some valid suit and rank *)
-type hand = (card option) array (** card list *)
+(** Rep. Invariant - in whist, the number of cards in a hand in always >=0 and
+    <= 13 AF : any [None] represents a lack of a card, whereas a [Some card] is
+    an existing card of some valid suit and rank *)
+type hand = Card.card list
+(** card list *)
 
 type player = {
   hand : hand;
-  user_id : string; (** should this signify real user vs. bot? or do we need another *)
+  user_id : int;
+      (** should this signify real user vs. bot? or do we need another *)
+  team : int;
 }
 
-(** Type table (field in the state record) uses type card array, 
-but its RI is the number of cards is >=0 and <= 4 
-AF: same as the AF for type hand, but indices 0,1,2,3 correlate to the card played by players 1,2,3,4, respectively, 
-such that a [None] indicates the player has not yet taken their turn, and a [Some card] means 
-the player has places this card on the table, and {i it no longer exists in their hand} *)
-type table = card array
+type table = Card.card option array
+(** Type table (field in the state record) uses type card array, but its RI is
+    the number of cards is >=0 and <= 4 AF: same as the AF for type hand, but
+    indices 0,1,2,3 correlate to the card played by players 1,2,3,4,
+    respectively, such that a [None] indicates the player has not yet taken
+    their turn, and a [Some card] means the player has places this card on the
+    table, and {i it no longer exists in their hand} *)
+
+type player_information = {
+  current_suit : Card.suit option;
+  trump : Card.suit;
+  current_cards : hand;
+  table : table;
+  team : int;
+  round_number : int;
+}
+
+type round_state = {
+  number : int;
+  current_suit : Card.suit option;
+  first_player : int;
+  current_player : int;
+  table : table;
+  trump_suit : Card.suit;
+}
 
 type state = {
-  player1 : player;
-  player2 : player;
-  player3 : player;
-  player4 : player;
-  table : table;
-  round_leader : string;
-  team1_score : int;
-  team2_score : int;
-
+  players : player array;
+  round_state : round_state;
+  scores : int * int;
 }
+(* let to_option arr = Array.map (fun card -> if card.rank = Number 0 then None
+   else Some card) arr *)
 
-let full_deck = Array.init 52 (fun i -> let suit = begin 
-  match i mod 4 with
-  | 0 -> Hearts
-  | 1 -> Spades
-  | 2 -> Diamonds
-  | _ -> Clubs
-  end
-in let rank = begin 
-  match (i / 4)+1 with 
-  | 1 -> Ace 
-  | 13 -> King
-  | 12 -> Queen
-  | 11 -> Jack
-  | n -> Number n
-  end
-in {suit = suit; rank = rank}
-  )
+let sub_list arr start len = List.init len (fun i -> arr.(start + i))
 
-let to_option arr = Array.map (fun card -> if card.rank = Number 0 then None else Some card) arr
-
-(** Random is initialized at the top of this file, 
-but we may be allowing to be seeded in gameplay *)
-let init seed = let deck = Array.copy full_deck in
-  Random.init seed;
+(** Random is initialized at the top of this file, but we may be allowing to be
+    seeded in gameplay *)
+let init seed =
+  let deck = Array.copy Card.full_deck in
   Array.shuffle ~rand:Random.int deck;
-  { 
-    player1 = {hand = to_option (Array.sub deck 0 12); user_id = "player_1"}; 
-    player2 = {hand = to_option (Array.sub deck 13 25); user_id = "player_2"};
-    player3 =  {hand = to_option (Array.sub deck 26 38); user_id = "player_3"};
-    player4 = {hand = to_option (Array.sub deck 39 51); user_id = "player_4"};
-    table = [||];
-    round_leader = "player1";
-    team1_score = 0;
-    team2_score = 0;
+
+  {
+    players =
+      [|
+        { hand = sub_list deck 0 13; user_id = 0; team = 0 };
+        { hand = sub_list deck 13 13; user_id = 1; team = 1 };
+        { hand = sub_list deck 26 13; user_id = 2; team = 0 };
+        { hand = sub_list deck 39 13; user_id = 3; team = 1 };
+      |];
+    round_state =
+      {
+        number = 0;
+        first_player = 0;
+        current_suit = None;
+        current_player = 0;
+        table = Array.init 4 (fun _ -> None);
+        trump_suit = Hearts;
+      };
+    scores = (0, 0);
+  }
+
+let new_round state =
+  let rs = state.round_state in
+  let current_suit =
+    match rs.current_suit with
+    | None -> invalid_arg "new round triggered out of order"
+    | Some c -> c
+  in
+  let winner = Card.max_card rs.table rs.trump_suit current_suit in
+  let new_score =
+    match winner with
+    | 0 | 2 -> (fst state.scores + 1, snd state.scores)
+    | 1 | 3 -> (fst state.scores, snd state.scores + 1)
+    | _ -> raise (Invalid_argument "invalid winner")
+  in
+  {
+    state with
+    scores = new_score;
+    round_state =
+      {
+        rs with
+        first_player = winner;
+        number = rs.number + 1;
+        current_suit = None;
+        current_player = winner;
+        table = [| None; None; None; None |];
+      };
+  }
+
+let valid_move state player card =
+  if player.user_id <> state.round_state.current_player then
+    raise Exceptions.OutOfOrder
+  else if not (List.mem card player.hand) then raise Exceptions.CardNotHeld
+  else
+    match state.round_state.current_suit with
+    | None -> true
+    | Some lead ->
+        if card.suit = lead then true
+        else if List.exists (fun (c : Card.card) -> c.suit = lead) player.hand
+        then raise Exceptions.IllegalCard
+        else true
+
+let update_hand players user_id new_hand =
+  let players' = Array.copy players in
+  players'.(user_id) <- { (players.(user_id)) with hand = new_hand };
+  players'
+
+let make_move state player card =
+  (* valid_move state player card; *)
+  (* shouldn't be necessary *)
+  let rs = state.round_state in
+  let table' = Array.copy rs.table in
+  let new_hand = List.filter (fun x -> x <> card) player.hand in
+  table'.(player.user_id) <- Some card;
+  let state' =
+    {
+      state with
+      round_state =
+        {
+          rs with
+          current_suit =
+            (if rs.current_suit = None then Some card.suit else rs.current_suit);
+          current_player = (rs.current_player + 1) mod 4;
+          table = table';
+        };
+      players = update_hand state.players player.user_id new_hand;
+    }
+  in
+  state'
+
+(* TODO: add type for view to use when displaying *)
+
+let get_player_view state player =
+  {
+    current_suit = state.round_state.current_suit;
+    trump = state.round_state.trump_suit;
+    current_cards = player.hand;
+    table = state.round_state.table;
+    team = player.team;
+    round_number = state.round_state.number;
   }

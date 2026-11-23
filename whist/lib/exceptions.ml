@@ -1,0 +1,3 @@
+exception CardNotHeld
+exception IllegalCard
+exception OutOfOrder
