@@ -43,3 +43,40 @@ let max_card table trump play_suit =
     if strength table.(i) > strength table.(!best) then best := i
   done;
   !best
+
+let rank_of_string_opt rank =
+  match int_of_string_opt rank with
+  | Some r when r >= 2 && r <= 10 -> Some (Number r)
+  | None ->
+      begin match rank with
+      | "A" -> Some Ace
+      | "K" -> Some King
+      | "Q" -> Some Queen
+      | "J" -> Some Jack
+      | _ -> None
+      end
+  | _ -> None
+
+let suit_of_string_opt suit =
+  match suit with
+  | "H" -> Some Hearts
+  | "S" -> Some Spades
+  | "D" -> Some Diamonds
+  | "C" -> Some Clubs
+  | _ -> None
+
+
+let card_of_string str = 
+  begin match rank_of_string_opt (String.sub str 0 1) with
+      | Some rank ->
+          begin match
+            suit_of_string_opt (String.uppercase_ascii (String.sub str 1 1))
+          with
+          | Some suit -> { rank; suit }
+          | None ->
+              raise (Exceptions.MalformedCard "Invalid suit, must be H = Hearts, S = Spades, D = Diamonds, C \
+                 = Clubs")
+          end
+      | None ->
+          raise (Exceptions.MalformedCard "Invalid rank, must be between 2 and 10, inclusive, or J,Q,K,A")
+      end
