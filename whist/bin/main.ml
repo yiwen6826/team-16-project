@@ -1,1 +1,3 @@
-let () = print_endline "Hello, World!"
+let () =
+  Random.self_init ();
+  Whist.Controller.run (Random.bits ())
