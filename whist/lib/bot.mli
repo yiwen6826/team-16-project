@@ -1,1 +1,1 @@
-val next_move : Model.bot_information -> Card.card
+val next_move : Model.player_information -> Card.card
