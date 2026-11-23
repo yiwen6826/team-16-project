@@ -159,3 +159,6 @@ let get_player_view state player =
     round_number = state.round_state.number;
 
   }
+
+let get_current_player state =
+  state.round_state.current_player
