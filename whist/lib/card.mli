@@ -24,3 +24,5 @@ val full_deck : card array
 (* sorted deck of standard cards *)
 
 val card_of_string : string -> card
+val string_of_suit_option : suit option -> string
+val string_of_card_option : card option -> string
