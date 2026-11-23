@@ -38,7 +38,7 @@ let lowest cards =
     cards share the same rank, any of them may be chosen. Requires:
     [info.current_cards] is non-empty. Raises: [Failure] if [info.current_cards]
     is empty. *)
-let next_move { Model.current_suit; trump; current_cards; table = _; team = _ }
+let next_move { Model.current_suit; trump; current_cards; table = _; team = _; round_number = _ }
     =
   match current_suit with
   | None ->
@@ -60,3 +60,41 @@ let next_move { Model.current_suit; trump; current_cards; table = _; team = _ }
         in
         if trump_suit_cards <> [] then lowest trump_suit_cards
         else lowest current_cards
+
+
+let longest hands =
+  match hands with
+  | first :: rest ->
+    List.fold_left (fun acc hand -> if List.length acc > List.length hand then acc else hand) first rest
+  | [] -> failwith "longest: empty list" 
+
+let smart_move { Model.current_suit; trump; current_cards; table; team; round_number = _ } =
+  match current_suit with
+  | None -> (
+      let non_trump_cards =
+        List.filter (fun (card : Card.card) -> card.suit <> trump) current_cards
+      in
+      let aces =
+        List.filter (fun (card : Card.card) -> card.rank = Ace) non_trump_cards
+      in
+      match aces with
+      | first :: _ -> first
+      | [] -> (
+          let non_trump_suits =
+            List.filter
+              (fun (suit : Card.suit) -> suit <> trump)
+              ([ Hearts; Spades; Diamonds; Clubs ] : Card.suit list)
+          in
+          let suit_hands =
+            List.map
+              (fun suit ->
+                List.filter
+                  (fun (card : Card.card) -> card.suit = suit)
+                  current_cards)
+              non_trump_suits
+          in
+          let non_empty = List.filter (fun hand -> hand <> []) suit_hands in
+          match non_empty with
+          | [] -> highest current_cards
+          | _ -> highest (longest non_empty)))
+  | Some v -> 
