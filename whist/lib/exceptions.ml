@@ -6,3 +6,5 @@ exception IllegalCard
 
 exception OutOfOrder
 (* raised if the player tries to play when it is not their turn *)
+
+exception MalformedCard of string
