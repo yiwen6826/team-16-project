@@ -4,7 +4,10 @@ type hand = Card.card list
     an existing card of some valid suit and rank *)
 
 type table
+(* array of four cards that may be in play*)
+
 type player
+(* contains state info about player *)
 
 type player_information = {
   current_suit : Card.suit option;
@@ -23,11 +26,22 @@ type player_information = {
     table, and {i it no longer exists in their hand} *)
 
 type state
+(* state information about game *)
 
 val init : Random.State.t -> state
+(* init new game *)
+
 val new_round : state -> state
+(* award points and reset at the end of round. precondition: all four players
+   have played their cards *)
+
 val valid_move : state -> player -> Card.card -> bool
+(* checks if move is valid and raises helpful error if it is not *)
+
 val make_move : state -> player -> Card.card -> state
+(* returns new state after player plays the card. precondition: valid move has
+   already been checked and returned true *)
+   
 val get_player_view : state -> player -> player_information
 val get_current_player : state -> player
 val get_user_id : player -> int

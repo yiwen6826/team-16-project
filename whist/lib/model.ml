@@ -27,6 +27,8 @@ type player_information = {
   team : int;
   round_number : int;
 }
+(* some information that cana be used by bots for planning a move, or displayed
+   to users in the terminal *)
 
 type round_state = {
   number : int;
@@ -36,6 +38,7 @@ type round_state = {
   table : table;
   trump_suit : Card.suit;
 }
+(* information pertaning to the current round *)
 
 type state = {
   players : player array;
@@ -44,11 +47,11 @@ type state = {
 }
 (* let to_option arr = Array.map (fun card -> if card.rank = Number 0 then None
    else Some card) arr *)
+(* information for the game overall*)
 
 let sub_list arr start len = List.init len (fun i -> arr.(start + i))
+(* helper to get sub array as a list *)
 
-(** Random is initialized at the top of this file, but we may be allowing to be
-    seeded in gameplay *)
 let init seed =
   let deck = Array.copy Card.full_deck in
   Array.shuffle ~rand:Random.int deck;
@@ -72,6 +75,7 @@ let init seed =
       };
     scores = (0, 0);
   }
+(* initialize game state at the beginning of the game *)
 
 let new_round state =
   let rs = state.round_state in
@@ -100,6 +104,7 @@ let new_round state =
         table = [| None; None; None; None |];
       };
   }
+(* award points and reset at the end of each round *)
 
 let valid_move state player card =
   if player.user_id <> state.round_state.current_player then
@@ -113,11 +118,14 @@ let valid_move state player card =
         else if List.exists (fun (c : Card.card) -> c.suit = lead) player.hand
         then raise Exceptions.IllegalCard
         else true
+(* return true if a move is valid, raise an error according to issue if it is
+   not *)
 
 let update_hand players user_id new_hand =
   let players' = Array.copy players in
   players'.(user_id) <- { (players.(user_id)) with hand = new_hand };
   players'
+(* update hand by copying array to avoid mutability *)
 
 let make_move state player card =
   (* valid_move state player card; *)
@@ -142,7 +150,7 @@ let make_move state player card =
   in
   state'
 
-(* TODO: add type for view to use when displaying *)
+(* return new state where player has played given card *)
 
 let get_player_view state player =
   {
@@ -153,6 +161,9 @@ let get_player_view state player =
     team = player.team;
     round_number = state.round_state.number;
   }
+(* return useful information for displaying game state to user *)
+
+  
 
 let get_current_player state =
   let curr_player_id = state.round_state.current_player in
