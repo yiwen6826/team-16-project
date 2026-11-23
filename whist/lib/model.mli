@@ -35,6 +35,8 @@ val valid_move : state -> player -> Card.card -> bool
 val make_move : state -> player -> Card.card -> state
 (* returns new state after player plays the card. precondition: valid move has
    already been checked and returned true *)
-
+   
 val get_player_view : state -> player -> player_information
 (* returns appropriate player information *)
+
+val get_current_player : state -> player
