@@ -1,2 +1,3 @@
 val run : int -> unit
-(* runs the main game logic loop, given an int for a seed *)
+(**[run seed] starts the main controller loop using the given [seed] to
+   initialize a model.*)

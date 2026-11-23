@@ -17,7 +17,13 @@ type player_information = {
   team : int;
   round_number : int;
 }
-(* information for displaying view to player *)
+
+(** Type table (field in the state record) also uses type hand, but its RI is
+    the number of cards is >=0 and <= 4 AF: same as the AF for type hand, but
+    indices 0,1,2,3 correlate to the card played by players 1,2,3,4,
+    respectively, such that a [None] indicates the player has not yet taken
+    their turn, and a [Some card] means the player has places this card on the
+    table, and {i it no longer exists in their hand} *)
 
 type state
 (* state information about game *)
@@ -37,6 +43,5 @@ val make_move : state -> player -> Card.card -> state
    already been checked and returned true *)
    
 val get_player_view : state -> player -> player_information
-(* returns appropriate player information *)
-
 val get_current_player : state -> player
+val get_user_id : player -> int

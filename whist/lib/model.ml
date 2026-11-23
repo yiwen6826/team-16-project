@@ -45,6 +45,8 @@ type state = {
   round_state : round_state;
   scores : int * int;
 }
+(* let to_option arr = Array.map (fun card -> if card.rank = Number 0 then None
+   else Some card) arr *)
 (* information for the game overall*)
 
 let sub_list arr start len = List.init len (fun i -> arr.(start + i))
@@ -164,4 +166,7 @@ let get_player_view state player =
   
 
 let get_current_player state =
-  state.round_state.current_player
+  let curr_player_id = state.round_state.current_player in
+  state.players.(curr_player_id)
+
+let get_user_id player = player.user_id
