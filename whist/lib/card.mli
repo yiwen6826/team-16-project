@@ -22,3 +22,5 @@ val max_card : card option array -> suit -> suit -> int
 
 val full_deck : card array
 (* sorted deck of standard cards *)
+
+val card_of_string : string -> card
