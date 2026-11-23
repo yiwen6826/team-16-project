@@ -4,12 +4,13 @@ type hand = Card.card list
 
 type table
 type player
-type bot_information = {
-  current_suit : Card.suit;
+type player_information = {
+  current_suit : Card.suit option;
   trump : Card.suit;
   current_cards : hand;
   table : table;
   team : int;
+  round_number : int;
 }
 
 (** Type table (field in the state record) also uses type hand, 
@@ -22,5 +23,6 @@ type state
 
 val init : Random.State.t -> state
 val new_round : state -> state
-val valid_move : state -> bool
-val make_move : state -> state
+val valid_move : state -> player -> Card.card -> bool
+val make_move : state -> player -> Card.card -> state
+val get_player_view : state -> player -> player_information
