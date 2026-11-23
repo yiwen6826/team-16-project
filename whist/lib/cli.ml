@@ -24,11 +24,13 @@ let rec get_card () =
   let open Card in
   let card = read_line () in
   match String.length card with
-  | 2 ->
-      begin match rank_of_string_opt (String.sub card 0 1) with
+  | 2 | 3 ->
+      let suit_index = String.length card - 1 in
+      begin match rank_of_string_opt (String.sub card 0 suit_index) with
       | Some rank ->
           begin match
-            suit_of_string_opt (String.uppercase_ascii (String.sub card 1 1))
+            suit_of_string_opt
+              (String.uppercase_ascii (String.sub card suit_index 1))
           with
           | Some suit -> { Card.rank; suit }
           | None ->
@@ -44,10 +46,9 @@ let rec get_card () =
       end
   | 0 ->
       print_endline
-        "The first character is the rank (2-10 = number values, J = Jack, Q = \
-         Queen, K = King, A = Ace) and the second is the suit (H = \
-         Hearts,S,D,C); ex. AD = Ace of Diamonds, 3C = 3 of Clubs)";
+        "Enter a rank (2-10, J, Q, K, A) followed by a suit (H, S, D, C). \
+         For example, AD is the Ace of Diamonds and 10C is the 10 of Clubs.";
       get_card ()
   | _ ->
-      print_endline "Invalid format, must be 2 characters only";
+      print_endline "Invalid format. Enter a rank and suit, such as AD or 10C.";
       get_card ()
