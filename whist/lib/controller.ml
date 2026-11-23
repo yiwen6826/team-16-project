@@ -29,11 +29,22 @@ let rec round_loop player_num model =
    initialize a model.*)
 let run seed =
   let rng = Random.State.make [| seed |] in
-  let rec play_rounds remaining model =
-    if remaining > 0 then (
-      let completed_round = round_loop 0 model in
-      (* View.print_game_staraise round; *)
-      if remaining > 1 then
-        play_rounds (remaining - 1) (Model.new_round completed_round))
-  in
-  play_rounds 13 (Model.init rng)
+  let state = ref (Model.init rng) in
+
+  for x = 1 to 13 do
+    for y = 0 to 3 do
+      let current_player = Model.get_current_player !state in
+      View.print_game_state !state (Model.get_player_by_id !state 0); (* print terminal view for human player*)
+      let card =
+        if Model.get_user_id current_player = 0 then
+          begin
+          choose_valid_card !state current_player
+          end
+        else Bot.next_move (Model.get_player_view !state current_player)
+      in
+      state := Model.make_move !state current_player card
+    done;
+
+    state := Model.new_round !state
+
+  done

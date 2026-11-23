@@ -170,3 +170,12 @@ let get_current_player state =
   state.players.(curr_player_id)
 
 let get_user_id player = player.user_id
+
+let get_player_by_id state id =
+  let players = Array.copy state.players in
+  match id with
+  | 0 -> players.(0)
+  | 1 -> players.(1)
+  | 2 -> players.(2) 
+  | 3 -> players.(3)
+  | _ -> raise Exceptions.MalformedInternalArg

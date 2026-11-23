@@ -45,3 +45,4 @@ val make_move : state -> player -> Card.card -> state
 val get_player_view : state -> player -> player_information
 val get_current_player : state -> player
 val get_user_id : player -> int
+val get_player_by_id : state -> int -> player
