@@ -1,1 +1,0 @@
-val next_move : Model.bot_information -> Card.card
