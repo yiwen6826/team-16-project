@@ -1,3 +1,7 @@
+let clear_screen () =
+  print_string "\027[2J\027[H";
+  flush stdout
+
 (** takes a [Card.suit] input and returns its string representation, as one
     letter if [short] else the whole string *)
 let string_of_suit suit short =
