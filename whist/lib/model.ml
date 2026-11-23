@@ -20,12 +20,13 @@ type table = Card.card option array
     table, and {i it no longer exists in their hand} *)
 
 type player_information = {
-  current_suit : Card.suit option;
-  trump : Card.suit;
-  current_cards : hand;
-  table : table;
-  team : int;
-  round_number : int;
+  pi_current_suit : Card.suit option;
+  pi_trump : Card.suit;
+  pi_current_cards : hand;
+  pi_table : table;
+  pi_team : int;
+  pi_round_number : int;
+  pi_current_player : int;
 }
 (* some information that cana be used by bots for planning a move, or displayed
    to users in the terminal *)
@@ -154,16 +155,15 @@ let make_move state player card =
 
 let get_player_view state player =
   {
-    current_suit = state.round_state.current_suit;
-    trump = state.round_state.trump_suit;
-    current_cards = player.hand;
-    table = state.round_state.table;
-    team = player.team;
-    round_number = state.round_state.number;
+    pi_current_suit = state.round_state.current_suit;
+    pi_trump = state.round_state.trump_suit;
+    pi_current_cards = player.hand;
+    pi_table = state.round_state.table;
+    pi_team = player.team;
+    pi_round_number = state.round_state.number;
+    pi_current_player = state.round_state.current_player;
   }
 (* return useful information for displaying game state to user *)
-
-  
 
 let get_current_player state =
   let curr_player_id = state.round_state.current_player in
@@ -176,6 +176,18 @@ let get_player_by_id state id =
   match id with
   | 0 -> players.(0)
   | 1 -> players.(1)
-  | 2 -> players.(2) 
+  | 2 -> players.(2)
   | 3 -> players.(3)
   | _ -> raise Exceptions.MalformedInternalArg
+
+let get_round_winner state =
+  let rs = state.round_state in
+  if rs.current_player <> rs.first_player then
+    raise Exceptions.MalformedInternalArg
+  else
+    let current_suit =
+      match rs.current_suit with
+      | None -> raise Exceptions.MalformedInternalArg
+      | Some s -> s
+    in
+    Card.max_card rs.table rs.trump_suit current_suit

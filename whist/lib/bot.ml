@@ -38,25 +38,26 @@ let lowest cards =
     cards share the same rank, any of them may be chosen. Requires:
     [info.current_cards] is non-empty. Raises: [Failure] if [info.current_cards]
     is empty. *)
-let next_move { Model.current_suit; trump; current_cards; table = _; team = _ }
+let next_move { Model.pi_current_suit; pi_trump; pi_current_cards; pi_table = _; pi_team = _; pi_current_player = _;}
     =
-  match current_suit with
+  Unix.sleep 1;
+  match pi_current_suit with
   | None ->
       let non_trump_cards =
-        List.filter (fun (card : Card.card) -> card.suit <> trump) current_cards
+        List.filter (fun (card : Card.card) -> card.suit <> pi_trump) pi_current_cards
       in
       if non_trump_cards <> [] then highest non_trump_cards
-      else highest current_cards
+      else highest pi_current_cards
   | Some s ->
       let current_suit_cards =
-        List.filter (fun (card : Card.card) -> card.suit = s) current_cards
+        List.filter (fun (card : Card.card) -> card.suit = s) pi_current_cards
       in
       if current_suit_cards <> [] then highest current_suit_cards
       else
         let trump_suit_cards =
           List.filter
-            (fun (card : Card.card) -> card.suit = trump)
-            current_cards
+            (fun (card : Card.card) -> card.suit = pi_trump)
+            pi_current_cards
         in
         if trump_suit_cards <> [] then lowest trump_suit_cards
-        else lowest current_cards
+        else lowest pi_current_cards

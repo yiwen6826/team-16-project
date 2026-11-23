@@ -1,1 +1,1 @@
-let () = print_endline "Hello, World!"
+let () = Whist.Controller.run 5

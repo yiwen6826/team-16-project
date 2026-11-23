@@ -80,3 +80,33 @@ let card_of_string str =
       | None ->
           raise (Exceptions.MalformedCard "Invalid rank, must be between 2 and 10, inclusive, or J,Q,K,A")
       end
+
+let string_of_suit_option so = 
+  match so with 
+  | None -> "unselected"
+  | Some s -> 
+    match s with
+    | Diamonds -> "D"
+    | Hearts -> "H"
+    | Clubs -> "C"
+    | Spades -> "S"
+
+
+    
+let string_of_card_option o = 
+  match o with
+  | Some c ->
+  let s = 
+    string_of_suit_option (Some c.suit)
+  in
+  let r = 
+    match c.rank with
+    | Number n -> string_of_int n
+    | Jack -> "J"
+    | Queen -> "Q"
+    | King -> "K"
+    | Ace -> "A"
+  in
+  r^s
+  | None -> "XX"
+
