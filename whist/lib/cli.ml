@@ -13,11 +13,8 @@ let rec get_card error_msg =
       (try Card.card_of_string card with
       | Exceptions.MalformedCard em -> get_card (Some em))
   | 0 ->
-      print_endline
-        "The first character is the rank (2-10 = number values, J = Jack, Q = \
+      get_card (Some "The first character is the rank (2-10 = number values, J = Jack, Q = \
          Queen, K = King, A = Ace) and the second is the suit (H = \
-         Hearts,S,D,C); ex. AD = Ace of Diamonds, 3C = 3 of Clubs)";
-      get_card None
+         Hearts,S,D,C); ex. AD = Ace of Diamonds, 3C = 3 of Clubs)")
   | _ ->
-      print_endline "Invalid format, must be 2 characters only";
-      get_card None
+      get_card (Some "Invalid format, must be 2 characters only")
