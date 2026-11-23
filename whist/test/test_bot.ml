@@ -4,21 +4,20 @@ open Whist
 (* Shortcut for building a card: [c Hearts King]. *)
 let c (suit : Card.suit) (rank : Card.rank) : Card.card = { suit; rank }
 
-(* A real table from a fresh game. The bot ignores it, so any table works. *)
-let dummy_table =
+(* A real player view from a fresh game. Tests copy it and override the
+   fields the bot uses, so the other fields always have valid values. *)
+let dummy_view =
   let st = Model.init (Random.State.make [| 42 |]) in
-  (Model.get_player_view st (Model.get_player_by_id st 0)).table
+  Model.get_player_view st (Model.get_player_by_id st 0)
 
-(* Builds the bot's input. Leave out [~current_suit] to mean the bot is leading.
-   The bot ignores [table], [team] and [round_number]. *)
+(* Builds the bot's input. Leave out [~current_suit] to mean the bot is
+   leading. *)
 let info ?current_suit ~trump hand : Model.player_information =
   {
-    current_suit;
-    trump;
-    current_cards = hand;
-    table = dummy_table;
-    team = 0;
-    round_number = 0;
+    dummy_view with
+    pi_current_suit = current_suit;
+    pi_trump = trump;
+    pi_current_cards = hand;
   }
 
 let bot_test name expected i =

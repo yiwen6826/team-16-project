@@ -3,19 +3,21 @@ type hand = Card.card list
     <= 13 AF : any [None] represents a lack of a card, whereas a [Some card] is
     an existing card of some valid suit and rank *)
 
-type table
+type table = Card.card option array
 (* array of four cards that may be in play*)
 
 type player
 (* contains state info about player *)
 
 type player_information = {
-  current_suit : Card.suit option;
-  trump : Card.suit;
-  current_cards : hand;
-  table : table;
-  team : int;
-  round_number : int;
+  pi_current_suit : Card.suit option;
+  pi_trump : Card.suit;
+  pi_current_cards : hand;
+  pi_table : table;
+  pi_team : int;
+  pi_round_number : int;
+  pi_current_player : int;
+  pi_my_uid : int;
 }
 
 (** Type table (field in the state record) also uses type hand, but its RI is
@@ -45,13 +47,7 @@ val make_move : state -> player -> Card.card -> state
 val get_player_view : state -> player -> player_information
 val get_current_player : state -> player
 val get_user_id : player -> int
-
 val get_player_by_id : state -> int -> player
-(** [get_player_by_id state id] returns the player with [id], from 0 to 3. *)
-
-val get_table_cards : table -> Card.card option list
-(** [get_table_cards table] returns the played cards in player ID order.
-    A [None] entry means that player still has to play. *)
-
-val get_scores : state -> int * int
-(** [get_scores state] returns the trick counts for team 0 and team 1. *)
+val get_round_winner : state -> int
+val get_team_scores : state -> int * int
+val end_round : state -> state

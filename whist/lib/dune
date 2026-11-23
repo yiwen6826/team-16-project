@@ -1,2 +1,3 @@
 (library
- (name whist))
+ (name whist)
+ (libraries unix))
