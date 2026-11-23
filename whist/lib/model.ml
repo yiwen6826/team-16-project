@@ -27,6 +27,7 @@ type player_information = {
   pi_team : int;
   pi_round_number : int;
   pi_current_player : int;
+  pi_my_uid : int;
 }
 (* some information that cana be used by bots for planning a move, or displayed
    to users in the terminal *)
@@ -55,7 +56,7 @@ let sub_list arr start len = List.init len (fun i -> arr.(start + i))
 
 let init seed =
   let deck = Array.copy Card.full_deck in
-  Array.shuffle ~rand:Random.int deck;
+  Array.shuffle ~rand:(Random.State.int seed) deck;
 
   {
     players =
@@ -176,6 +177,7 @@ let get_player_view state player =
     pi_team = player.team;
     pi_round_number = state.round_state.number;
     pi_current_player = state.round_state.current_player;
+    pi_my_uid = player.user_id;
   }
 (* return useful information for displaying game state to user *)
 

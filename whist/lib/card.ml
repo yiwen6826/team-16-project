@@ -1,6 +1,20 @@
-type rank = Number of int | Jack | Queen | King | Ace
-type suit = Hearts | Spades | Diamonds | Clubs
-type card = {suit : suit; rank : rank}
+type rank =
+  | Number of int
+  | Jack
+  | Queen
+  | King
+  | Ace
+
+type suit =
+  | Hearts
+  | Spades
+  | Diamonds
+  | Clubs
+
+type card = {
+  suit : suit;
+  rank : rank;
+}
 
 let full_deck =
   Array.init 52 (fun i ->
@@ -65,48 +79,66 @@ let suit_of_string_opt suit =
   | "C" -> Some Clubs
   | _ -> None
 
-
-let card_of_string str = 
-  begin match rank_of_string_opt (String.sub str 0 1) with
-      | Some rank ->
-          begin match
-            suit_of_string_opt (String.uppercase_ascii (String.sub str 1 1))
-          with
-          | Some suit -> { rank; suit }
-          | None ->
-              raise (Exceptions.MalformedCard "Invalid suit, must be H = Hearts, S = Spades, D = Diamonds, C \
-                 = Clubs")
-          end
+let ten_case str =
+  match int_of_string_opt (String.sub str 0 2) with
+  | Some 10 ->
+      begin match
+        suit_of_string_opt (String.uppercase_ascii (String.sub str 2 1))
+      with
+      | Some suit -> { rank = Number 10; suit }
       | None ->
-          raise (Exceptions.MalformedCard "Invalid rank, must be between 2 and 10, inclusive, or J,Q,K,A")
+          raise
+            (Exceptions.MalformedCard
+               "Invalid suit, must be H = Hearts, S = Spades, D = Diamonds, C \
+                = Clubs")
       end
+  | _ ->
+      raise (Exceptions.MalformedCard "Card has three symbols but is not a ten")
 
-let string_of_suit_option so = 
-  match so with 
+let card_of_string str =
+  if String.length str = 3 then 
+    ten_case str
+  else
+
+  begin match rank_of_string_opt (String.sub str 0 1) with
+  | Some rank ->
+      begin match
+        suit_of_string_opt (String.uppercase_ascii (String.sub str 1 1))
+      with
+      | Some suit -> { rank; suit }
+      | None ->
+          raise
+            (Exceptions.MalformedCard
+               "Invalid suit, must be H = Hearts, S = Spades, D = Diamonds, C \
+                = Clubs")
+      end
+  | None ->
+      raise
+        (Exceptions.MalformedCard
+           "Invalid rank, must be between 2 and 10, inclusive, or J,Q,K,A")
+  end
+
+let string_of_suit_option so =
+  match so with
   | None -> "unselected"
-  | Some s -> 
-    match s with
-    | Diamonds -> "D"
-    | Hearts -> "H"
-    | Clubs -> "C"
-    | Spades -> "S"
+  | Some s -> (
+      match s with
+      | Diamonds -> "D"
+      | Hearts -> "H"
+      | Clubs -> "C"
+      | Spades -> "S")
 
-
-    
-let string_of_card_option o = 
+let string_of_card_option o =
   match o with
   | Some c ->
-  let s = 
-    string_of_suit_option (Some c.suit)
-  in
-  let r = 
-    match c.rank with
-    | Number n -> string_of_int n
-    | Jack -> "J"
-    | Queen -> "Q"
-    | King -> "K"
-    | Ace -> "A"
-  in
-  r^s
+      let s = string_of_suit_option (Some c.suit) in
+      let r =
+        match c.rank with
+        | Number n -> string_of_int n
+        | Jack -> "J"
+        | Queen -> "Q"
+        | King -> "K"
+        | Ace -> "A"
+      in
+      r ^ s
   | None -> "XX"
-

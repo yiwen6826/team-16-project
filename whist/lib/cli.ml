@@ -9,6 +9,7 @@ let rec get_card error_msg =
   let open Card in
   let card = read_line () in
   match String.length card with
+  | 3 
   | 2 ->
       (try Card.card_of_string card with
       | Exceptions.MalformedCard em -> get_card (Some em))
