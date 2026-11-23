@@ -1,7 +1,7 @@
 (** Rep. Invariant - in whist, the number of cards in a hand in always >=0 and
     <= 13 AF : any [None] represents a lack of a card, whereas a [Some card] is
     an existing card of some valid suit and rank *)
-type hand = Card.card list 
+type hand = Card.card list
 (** card list *)
 
 type player = {
@@ -19,7 +19,6 @@ type table = Card.card option array
     their turn, and a [Some card] means the player has places this card on the
     table, and {i it no longer exists in their hand} *)
 
-
 type player_information = {
   current_suit : Card.suit option;
   trump : Card.suit;
@@ -28,7 +27,6 @@ type player_information = {
   team : int;
   round_number : int;
 }
-
 
 type round_state = {
   number : int;
@@ -44,8 +42,8 @@ type state = {
   round_state : round_state;
   scores : int * int;
 }
-(* let to_option arr =
-  Array.map (fun card -> if card.rank = Number 0 then None else Some card) arr *)
+(* let to_option arr = Array.map (fun card -> if card.rank = Number 0 then None
+   else Some card) arr *)
 
 let sub_list arr start len = List.init len (fun i -> arr.(start + i))
 
@@ -74,9 +72,6 @@ let init seed =
       };
     scores = (0, 0);
   }
-
-
-
 
 let new_round state =
   let rs = state.round_state in
@@ -108,20 +103,20 @@ let new_round state =
 
 let valid_move state player card =
   if player.user_id <> state.round_state.current_player then
-    raise Exceptions.OutOfOrder 
+    raise Exceptions.OutOfOrder
   else if not (List.mem card player.hand) then raise Exceptions.CardNotHeld
   else
     match state.round_state.current_suit with
     | None -> true
     | Some lead ->
         if card.suit = lead then true
-        else if List.exists (fun (c : Card.card) -> c.suit = lead) player.hand then
-          raise Exceptions.IllegalCard
+        else if List.exists (fun (c : Card.card) -> c.suit = lead) player.hand
+        then raise Exceptions.IllegalCard
         else true
 
 let update_hand players user_id new_hand =
   let players' = Array.copy players in
-  players'.(user_id) <- {players.(user_id) with hand = new_hand};
+  players'.(user_id) <- { (players.(user_id)) with hand = new_hand };
   players'
 
 let make_move state player card =
@@ -131,7 +126,7 @@ let make_move state player card =
   let table' = Array.copy rs.table in
   let new_hand = List.filter (fun x -> x <> card) player.hand in
   table'.(player.user_id) <- Some card;
-  let state' = 
+  let state' =
     {
       state with
       round_state =
@@ -157,8 +152,10 @@ let get_player_view state player =
     table = state.round_state.table;
     team = player.team;
     round_number = state.round_state.number;
-
   }
 
 let get_current_player state =
-  state.round_state.current_player
+  let curr_player_id = state.round_state.current_player in
+  state.players.(curr_player_id)
+
+let get_user_id player = player.user_id
