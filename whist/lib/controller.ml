@@ -50,6 +50,7 @@ let run seed =
       in
       state := Model.make_move !state current_player card
     done;
+    state := Model.end_round !state;
     View.print_round_end !state (Model.get_player_by_id !state 0);
     Unix.sleep 2;
 

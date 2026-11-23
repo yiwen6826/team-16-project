@@ -1,6 +1,6 @@
 (* val print_game_state : Model.state -> Model.player -> unit *)
 let clear_screen () =
-  print_string "\027[3J\027[2J\027[H";
+  print_string "\027[2J\027[H";
   flush stdout
 
 
@@ -27,4 +27,6 @@ let print_game_state state player =
 
 let print_round_end state player = 
   print_game_state state player;
-  print_endline ("round over. winner: " ^ string_of_int (Model.get_round_winner state))
+  print_endline ("round over. winner: " ^ string_of_int (Model.get_round_winner state));
+  let s1, s2 = Model.get_team_scores state in
+  print_endline ("current scores: team 1 -> " ^ string_of_int s1 ^ ", team 2 -> " ^ string_of_int s2)

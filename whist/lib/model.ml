@@ -78,11 +78,11 @@ let init seed =
   }
 (* initialize game state at the beginning of the game *)
 
-let new_round state =
+let end_round state =
   let rs = state.round_state in
   let current_suit =
-    match rs.current_suit with
-    | None -> invalid_arg "new round triggered out of order"
+    match rs.current_suit with 
+    | None -> raise Exceptions.MalformedInternalArg
     | Some c -> c
   in
   let winner = Card.max_card rs.table rs.trump_suit current_suit in
@@ -93,8 +93,22 @@ let new_round state =
     | _ -> raise (Invalid_argument "invalid winner")
   in
   {
-    state with
+    state with 
     scores = new_score;
+  }
+  
+
+let new_round state =
+  let rs = state.round_state in
+  let current_suit =
+    match rs.current_suit with
+    | None -> invalid_arg "new round triggered out of order"
+    | Some c -> c
+  in
+  let winner = Card.max_card rs.table rs.trump_suit current_suit
+  in
+  {
+    state with
     round_state =
       {
         rs with
@@ -191,3 +205,5 @@ let get_round_winner state =
       | Some s -> s
     in
     Card.max_card rs.table rs.trump_suit current_suit
+
+let get_team_scores state = state.scores
