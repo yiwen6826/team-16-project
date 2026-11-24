@@ -281,4 +281,4 @@ let suite =
   >::: init_tests @ getter_tests @ valid_move_tests @ make_move_tests
        @ round_tests
 
-(* let () = run_test_tt_main suite *)
+let () = run_test_tt_main suite
