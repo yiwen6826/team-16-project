@@ -54,10 +54,10 @@ let run seed =
           if Model.valid_move !state current_player miu then miu
           else raise Exceptions.MalformedInternalArg
       in
-      state := Model.make_move !state current_player card;
+      state := Model.make_move !state current_player card
     done;
     state := Model.end_round !state;
-    View.print_round_end !state (Model.get_player_by_id !state 0);
+    (* View.print_round_end !state (Model.get_player_by_id !state 0); *)
     Unix.sleep 3;
 
     state := Model.new_round !state
