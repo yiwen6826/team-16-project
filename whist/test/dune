@@ -1,3 +1,3 @@
 (tests
- (names test_whist test_bot)
+ (names test_whist test_bot test_model)
  (libraries whist ounit2))
