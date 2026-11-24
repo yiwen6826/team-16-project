@@ -57,6 +57,15 @@ let sub_list arr start len = List.init len (fun i -> arr.(start + i))
 let init seed =
   let deck = Array.copy Card.full_deck in
   Array.shuffle ~rand:(Random.State.int seed) deck;
+  let init_trump_suit =
+    match Random.State.int seed 4 with
+    | 0 -> Card.Hearts
+    | 1 -> Card.Spades
+    | 2 -> Card.Diamonds
+    | 3 -> Card.Clubs
+    | _ ->
+        Card.Hearts (*shouldn't get this case but fallback is hearts hardcoded*)
+  in
 
   {
     players =
@@ -73,7 +82,7 @@ let init seed =
         current_suit = None;
         current_player = 0;
         table = Array.init 4 (fun _ -> None);
-        trump_suit = Hearts;
+        trump_suit = init_trump_suit;
       };
     scores = (0, 0);
   }
@@ -82,7 +91,7 @@ let init seed =
 let end_round state =
   let rs = state.round_state in
   let current_suit =
-    match rs.current_suit with 
+    match rs.current_suit with
     | None -> raise Exceptions.MalformedInternalArg
     | Some c -> c
   in
@@ -93,11 +102,7 @@ let end_round state =
     | 1 | 3 -> (fst state.scores, snd state.scores + 1)
     | _ -> raise (Invalid_argument "invalid winner")
   in
-  {
-    state with 
-    scores = new_score;
-  }
-  
+  { state with scores = new_score }
 
 let new_round state =
   let rs = state.round_state in
@@ -106,8 +111,7 @@ let new_round state =
     | None -> invalid_arg "new round triggered out of order"
     | Some c -> c
   in
-  let winner = Card.max_card rs.table rs.trump_suit current_suit
-  in
+  let winner = Card.max_card rs.table rs.trump_suit current_suit in
   {
     state with
     round_state =
