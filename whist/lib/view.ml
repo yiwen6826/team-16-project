@@ -3,7 +3,7 @@ let clear_screen () =
   flush stdout
 
 let print_end_round state (* player *) =
-  clear_screen ();
+  (* clear_screen (); *)
   let player_id = Model.get_round_winner state in
   Printf.printf "Round over. +1 trick for Team%d\n" (2 - (player_id mod 2));
   (* converts 1,3 -> 1, 2,4 -> 2 *)
