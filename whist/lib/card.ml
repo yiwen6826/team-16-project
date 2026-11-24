@@ -142,3 +142,30 @@ let string_of_card_option o =
       in
       r ^ s
   | None -> "XX"
+
+
+
+(** takes a [Card.suit] input and returns its string representation, as one
+    letter if [short] else the whole string *)
+let string_of_suit suit short =
+  let str =
+    match suit with
+    | Hearts -> "Hearts" (* Hearts *)
+    | Spades -> "Spades" (* Spades *)
+    | Diamonds -> "Diamonds" (* Diamonds *)
+    | Clubs -> "Clubs" (* Clubs *)
+  in
+  if short then String.sub str 0 1 else str
+
+(** takes a [Card.rank] input and returns its string representation *)
+let string_of_rank = function
+  | Number n -> string_of_int n
+  | Jack -> "J"
+  | Queen -> "Q"
+  | King -> "K"
+  | Ace -> "A"
+
+(** takes a [Card.card] input and returns its string representation *)
+let string_of_card { rank; suit } =
+  Printf.sprintf "%s%s" (string_of_rank rank) (string_of_suit suit true)
+
