@@ -57,7 +57,8 @@ let run seed =
       state := Model.make_move !state current_player card
     done;
     state := Model.end_round !state;
-    (* View.print_round_end !state (Model.get_player_by_id !state 0); *)
+    View.print_game_state !state (Model.get_player_by_id !state 0);
+    View.print_end_round !state;
     Unix.sleep 3;
 
     state := Model.new_round !state
