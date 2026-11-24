@@ -37,8 +37,9 @@ let run seed =
 
   for x = 1 to 13 do
     for y = 0 to 3 do
+      print_endline "someone is moving...";
       let current_player = Model.get_current_player !state in
-      View.print_game_state !state (Model.get_player_by_id !state 0); (* print terminal view for human player*)
+      View.print_game_state !state (Model.get_player_by_id !state 0); 
       let card =
         if Model.get_user_id current_player = 0 then
           begin
@@ -48,10 +49,11 @@ let run seed =
           let miu = Bot.next_move (Model.get_player_view !state current_player) in
           if Model.valid_move !state current_player miu then miu else raise Exceptions.MalformedInternalArg
       in
-      state := Model.make_move !state current_player card
+      state := Model.make_move !state current_player card;
     done;
     state := Model.end_round !state;
-    View.print_round_end !state (Model.get_player_by_id !state 0);
+    (* View.print_round_end !state (Model.get_player_by_id !state 0); *)
+    View.print_game_state !state (Model.get_player_by_id !state 0);
     Unix.sleep 2;
 
     state := Model.new_round !state
