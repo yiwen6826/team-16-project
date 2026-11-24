@@ -213,3 +213,26 @@ let get_round_winner state =
     Card.max_card rs.table rs.trump_suit current_suit
 
 let get_team_scores state = state.scores
+
+(** takes a [hand] input (exposed as [Card.card list]) and returns its string
+    representation *)
+let string_of_hand hand =
+  List.fold_left (fun acc card -> acc ^ Card.string_of_card card ^ " ") "" hand
+
+(** takes a [Model.table] input (exposed as [Card.card option list]) and returns
+    its string representation *)
+let string_of_table (table : table) viewer_id =
+  (Array.to_list table)
+  |> List.mapi (fun id card ->
+      let player_label =
+        if id = viewer_id then "You" else Printf.sprintf "Player %d" (id + 1)
+      in
+      let played =
+        match card with
+        | None -> "XX"
+        | Some c -> Card.string_of_card c
+      in
+      Printf.sprintf "%s [%s]" player_label played)
+  |> String.concat "  "
+
+

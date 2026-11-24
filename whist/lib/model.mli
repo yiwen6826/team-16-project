@@ -51,3 +51,5 @@ val get_player_by_id : state -> int -> player
 val get_round_winner : state -> int
 val get_team_scores : state -> int * int
 val end_round : state -> state
+val string_of_table : table -> int -> string
+val string_of_hand : hand -> string
